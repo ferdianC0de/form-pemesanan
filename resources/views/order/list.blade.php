@@ -6,6 +6,18 @@
 @endsection
 @section('content')
 
+<div class="card mb-3">
+    <div class="card-header">
+        Grafik Pengunjung
+    </div>
+    <div class="card-body">
+        @foreach ($dst as $item)
+            {{ $item }}
+        @endforeach
+        <canvas id="myChart" width="400" height="100"></canvas>
+    </div>
+</div>
+
 <div class="card">
     <div class="card-header">
         Daftar Pesanan
@@ -41,3 +53,27 @@
 </div>
 
 @stop
+@push('scripts')
+<script>
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const datas = {!! json_encode($datagraph)!!}
+    const myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Dewasa', 'Anak-anak'],
+            datasets: datas.map((val, key) => {
+                val.backgroundColor = 'rgb('+(Math.floor(Math.random() * 255) + 1)+', '+(Math.floor(Math.random() * 255) + 1)+', '+(Math.floor(Math.random() * 255) + 1)+', 0.4)';
+                console.log(val);
+                return val;
+            }),
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    </script>
+@endpush

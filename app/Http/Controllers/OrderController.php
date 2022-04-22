@@ -16,7 +16,23 @@ class OrderController extends Controller
     public function index()
     {
         $orders = Order::all();
-        return view('order.list', compact('orders'));
+        $destinations = Destination::all('name');
+        $dtgraph = Destination::with(['order' => function($query){
+            $query->select('destination_id','adultPersons','kidPersons');
+            $query->sum('adultPersons');
+        }])->get();
+        $datagraph = [];
+        foreach ($dtgraph as $k => $v) {
+            $datagraph[$k]['label'] = $v->name;
+            $datagraph[$k]['data'][0] = $v->order->sum('adultPersons');
+            $datagraph[$k]['data'][1] = $v->order->sum('kidPersons');
+        }
+
+        $dst = [];
+        for ($i=0; $i < count($destinations) ; $i++) {
+                $dst[$i] = $destinations[$i]->name;
+        }
+        return view('order.list', compact(['orders', 'dst', 'datagraph']));
     }
 
     /**
@@ -48,20 +64,41 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        // return $request;
-        $order = new Order();
-        $order->name = $request->name;
-        $order->noId = $request->noId;
-        $order->noHp = $request->noHp;
-        $order->destination_id = $request->destination;
-        $order->visitDate = date_format(date_create($request->visitDate), 'Y-m-d H:i:s');
-        $order->adultPersons = $request->adultPersons;
-        $order->kidPersons = $request->kidPersons;
-        $order->totalPrice = $request->totalPrice;
-        // return json_encode($order);
+        $request->merge([
+            'visitDate' => date_format(date_create($request->visitDate), 'Y-m-d H:i:s'),
+        ]);
+        $validated = $request->validate([
+            // 'title' => 'required|unique:posts|max:255',
+            'name' => 'required',
+            'noId' => 'required|max:16|min:16',
+            'noHp' => 'required',
+            'destination_id' => 'required',
+            'visitDate' => 'required',
+            'adultPersons' => 'required',
+            'kidPersons' => 'required',
+            'totalPrice' => 'required',
+        ]);
 
-        $order->save();
-        return redirect('order');
+        try {
+            Order::insert($validated);
+            return redirect('order');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+
+        // $order = new Order();
+        // $order->name = $request->name;
+        // $order->noId = $request->noId;
+        // $order->noHp = $request->noHp;
+        // $order->destination_id = $request->destination;
+        // $order->visitDate = date_format(date_create($request->visitDate), 'Y-m-d H:i:s');
+        // $order->adultPersons = $request->adultPersons;
+        // $order->kidPersons = $request->kidPersons;
+        // $order->totalPrice = $request->totalPrice;
+        // // return json_encode($order);
+
+        // $order->save();
+        // return redirect('order');
     }
 
     /**

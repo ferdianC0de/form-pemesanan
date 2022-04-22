@@ -17,7 +17,10 @@
               <div class="form-group row">
                   <label for="colFormLabel" class="col-sm-3 col-form-label">Nama Lengkap</label>
                   <div class="col-sm-9">
-                    <input type="text" name="name" class="form-control" id="name">
+                    <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" id="name">
+                    @error('name')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
                   </div>
               </div>
 
@@ -25,7 +28,10 @@
               <div class="form-group row">
                   <label for="colFormLabel" class="col-sm-3 col-form-label">Nomor Identitas</label>
                   <div class="col-sm-9">
-                    <input type="text" name="noId" class="form-control" id="noId">
+                    <input type="text" name="noId" class="form-control @error('name') is-invalid @enderror" id="noId">
+                    @error('noId')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
                   </div>
               </div>
 
@@ -33,7 +39,10 @@
               <div class="form-group row">
                   <label for="colFormLabel" class="col-sm-3 col-form-label">No HP</label>
                   <div class="col-sm-9">
-                    <input type="text" name="noHp" class="form-control" id="noHp">
+                    <input type="text" name="noHp" class="form-control @error('noHp') is-invalid @enderror" id="noHp">
+                    @error('noHp')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
                   </div>
               </div>
 
@@ -41,7 +50,7 @@
               <div class="form-group row">
                   <label for="colFormLabel" class="col-sm-3 col-form-label">Tempat Wisata</label>
                   <div class="col-sm-9">
-                    <select class="form-control" id="destination" name="destination">
+                    <select class="form-control" id="destination_id" name="destination_id">
                         @foreach ($destinations as $d)
                             <option value="{{ $d->id }}" price={{ $d->price }}>{{ $d->name }}</option>
                         @endforeach
@@ -61,7 +70,10 @@
               <div class="form-group row">
                   <label for="colFormLabel" class="col-sm-3 col-form-label">Pengunjung Dewasa</label>
                   <div class="col-sm-9">
-                    <input type="number" class="form-control" id="adultPersons" name="adultPersons">
+                    <input type="number" class="form-control @error('adultPersons') is-invalid @enderror" id="adultPersons" name="adultPersons">
+                    @error('adultPersons')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
                   </div>
               </div>
 
@@ -69,7 +81,10 @@
               <div class="form-group row">
                   <label for="colFormLabel" class="col-sm-3 col-form-label">Pengunjung Anak-anak</label>
                   <div class="col-sm-9">
-                    <input type="number" class="form-control" id="kidPersons" name="kidPersons">
+                    <input type="number" class="form-control @error('kidPersons') is-invalid @enderror" id="kidPersons" name="kidPersons">
+                    @error('kidPersons')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
                   </div>
               </div>
 
@@ -114,17 +129,17 @@
         style: 'currency',
         currency: 'IDR',
         });
-        var price = $('option:selected', $('#destination')).attr('price');
+        var price = $('option:selected', $('#destination_id')).attr('price');
 
         function setPrice() {
-            price = $('option:selected', $('#destination')).attr('price');
+            price = $('option:selected', $('#destination_id')).attr('price');
             $('#ticketPrice').html(() => {
                 $('input[name="ticketPrice"]').val(price);
                 return formatter.format(price);
             });
         }
         setPrice();
-        $('#destination').change(() => {
+        $('#destination_id').change(() => {
             setPrice();
         });
 
